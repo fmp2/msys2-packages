@@ -1,0 +1,33 @@
+# Maintainer: Diego Sogari <diego.sogari@gmail.com>
+
+_realname=polymul
+pkgbase=dsogari-mingw-w64-${_realname}
+pkgname="dsogari-${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Multivariate polynomial multiplication with C++ templates (mingw-w64)"
+arch=('any')
+url="https://github.com/dsogari/polymul"
+license=('MIT')
+makedepends=("${MINGW_PACKAGE_PREFIX}-gcc")
+source=("${_realname}-${pkgver}.tar.gz::https://codeload.github.com/dsogari/polymul/tar.gz/v${pkgver}")
+sha256sums=('fd90d76df1e108bffedf4a909d6212bc86c100c468cdd74db6fd3423041480e9')
+
+build() {
+  rm -rf "${srcdir}/build-${MINGW_CHOST}"
+  mkdir "${srcdir}/build-${MINGW_CHOST}"
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  
+  ../${_realname}-${pkgver}/configure \
+    --build=${MINGW_CHOST} \
+    --host=${MINGW_CHOST} \
+    --target=${MINGW_CHOST} \
+    --prefix=${MINGW_PREFIX}
+
+  make
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  make DESTDIR="${pkgdir}" install
+}

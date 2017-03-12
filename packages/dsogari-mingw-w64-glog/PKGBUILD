@@ -1,0 +1,56 @@
+# Maintainer: Diego Sogari <diego.sogari@falker.com.br>
+
+_realname=glog
+pkgbase=dsogari-mingw-w64-${_realname}
+pkgname="dsogari-${MINGW_PACKAGE_PREFIX}-${_realname}"
+provides=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+conflicts=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+replaces=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+pkgver=0.3.4.r234.da816ea
+pkgrel=1
+pkgdesc="C++ implementation of the Google logging module (mingw-w64)"
+arch=('any')
+url="https://github.com/google/glog"
+license=('New BSD License')
+makedepends=("${MINGW_PACKAGE_PREFIX}-gcc" "${MINGW_PACKAGE_PREFIX}-cmake")
+depends=("${MINGW_PACKAGE_PREFIX}-gflags")
+commit=4d391fe692ae6b9e0105f473945c415a3ce5a401
+source=("${_realname}::git+https://github.com/google/glog.git"
+        "${_realname}-0.3.4.r234.da816ea.patch")
+sha256sums=('SKIP'
+            '2d75c6c1ded4adca59bc5adbefe190da69c997c997dc3a15908db8fa822f5dac')
+
+pkgver() {
+  cd "${srcdir}/${_realname}"
+  printf "%s.r%s.%s" "0.3.4" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+  cd "${srcdir}/${_realname}"
+  patch -Np1 -i "../${_realname}-0.3.4.r234.da816ea.patch"
+}
+
+build() {
+  rm -rf "${srcdir}/build-${MINGW_CHOST}"
+  mkdir "${srcdir}/build-${MINGW_CHOST}"
+  cd "${srcdir}/build-${MINGW_CHOST}"
+
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+  ${MINGW_PREFIX}/bin/cmake.exe \
+    -G"MSYS Makefiles" \
+    -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
+    -DBUILD_SHARED_LIBS=YES \
+    "../${_realname}"
+
+  make
+}
+
+check() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  make test
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  make DESTDIR="${pkgdir}" install
+}

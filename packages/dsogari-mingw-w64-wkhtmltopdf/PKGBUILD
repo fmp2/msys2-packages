@@ -1,0 +1,62 @@
+# Maintainer: Diego Sogari <diego.sogari@gmail.com>
+
+_realname=wkhtmltopdf
+pkgbase=dsogari-mingw-w64-${_realname}
+pkgname="dsogari-${MINGW_PACKAGE_PREFIX}-${_realname}"
+provides=("${MINGW_PACKAGE_PREFIX}-${_realname}-git")
+conflicts=("${MINGW_PACKAGE_PREFIX}-${_realname}-git")
+replaces=("${MINGW_PACKAGE_PREFIX}-${_realname}-git")
+_basever=0.13
+pkgver=0.13.r1049.51f9658
+pkgrel=3
+pkgdesc="Convert HTML to PDF using QtWebkit (mingw-w64)"
+arch=('any')
+url="http://wkhtmltopdf.org/"
+license=('LGPL')
+makedepends=("git" "${MINGW_PACKAGE_PREFIX}-gcc")
+depends=("${MINGW_PACKAGE_PREFIX}-qt5"
+         "${MINGW_PACKAGE_PREFIX}-qtwebkit")
+source=("${_realname}::git+https://github.com/${_realname}/${_realname}.git#branch=merge-${_basever}"
+        "${_realname}-r1049.51f9658.patch")
+sha256sums=('SKIP'
+            '988f291b24e6c92a1f91c5fcef256a3cbf9a3cd5118f54f9732c616b270ffcec')
+
+pkgver() {
+  cd "${srcdir}/${_realname}"
+  printf "%s.r%s.%s" "${_basever}" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+  cd "${srcdir}/${_realname}"
+  patch -Np1 -i "../${_realname}-r1049.51f9658.patch"
+}
+
+build() {
+  rm -rf "${srcdir}/build-${MINGW_CHOST}"
+  mkdir "${srcdir}/build-${MINGW_CHOST}"
+  cd "${srcdir}/build-${MINGW_CHOST}"
+
+  ln -fs `which windres` ${MINGW_CHOST}-windres
+  PATH=`pwd`:$PATH
+  export WKHTMLTOX_VERSION=${_basever}
+
+  ${MINGW_PREFIX}/bin/qmake -set CROSS_COMPILE "${MINGW_CHOST}-"
+  ${MINGW_PREFIX}/bin/qmake -spec win32-g++ "../${_realname}/${_realname}.pro"
+  make release
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+
+  install -D ../${_realname}/include/wkhtmltox/dllbegin.inc "${pkgdir}${MINGW_PREFIX}/include/wkhtmltox/dllbegin.inc"
+  install -D ../${_realname}/include/wkhtmltox/dllend.inc "${pkgdir}${MINGW_PREFIX}/include/wkhtmltox/dllend.inc"
+  install -D ../${_realname}/include/wkhtmltox/image.h "${pkgdir}${MINGW_PREFIX}/include/wkhtmltox/image.h"
+  install -D ../${_realname}/include/wkhtmltox/pdf.h "${pkgdir}${MINGW_PREFIX}/include/wkhtmltox/pdf.h"
+
+  install -d "${pkgdir}${MINGW_PREFIX}/bin"
+  install "./bin/"*.dll "${pkgdir}${MINGW_PREFIX}/bin"
+  install "./bin/"*.exe "${pkgdir}${MINGW_PREFIX}/bin"
+
+  install -d "${pkgdir}${MINGW_PREFIX}/lib"
+  install "./bin/"*.a "${pkgdir}${MINGW_PREFIX}/lib"
+}

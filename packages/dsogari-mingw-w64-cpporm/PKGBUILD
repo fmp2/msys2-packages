@@ -1,0 +1,43 @@
+# Maintainer: Diego Sogari <diego.sogari@gmail.com>
+
+_realname=cpporm
+pkgbase=dsogari-mingw-w64-${_realname}
+pkgname="dsogari-${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=0.2.15
+pkgrel=3
+pkgdesc="Simple ORM library with SQL parser (mingw-w64)"
+arch=('any')
+url="https://github.com/dsogari/cpporm"
+license=('custom')
+makedepends=("${MINGW_PACKAGE_PREFIX}-gcc"
+             "${MINGW_PACKAGE_PREFIX}-cmake"
+             "dsogari-${MINGW_PACKAGE_PREFIX}-soci")
+depends=("${MINGW_PACKAGE_PREFIX}-boost"
+         "${MINGW_PACKAGE_PREFIX}-gflags"
+         "${MINGW_PACKAGE_PREFIX}-antlr4-runtime-cpp")
+checkdepends=("${MINGW_PACKAGE_PREFIX}-googletest")
+optdepends=("dsogari-${MINGW_PACKAGE_PREFIX}-soci")
+source=("${_realname}-${pkgver}.tar.gz::https://codeload.github.com/dsogari/cpporm/tar.gz/v${pkgver}")
+sha256sums=('c7af901f643839874979171d36e35dc1695f13d185ef614c5e13e4ef290c0900')
+
+build() {
+  rm -rf "${srcdir}/build-${MINGW_CHOST}"
+  mkdir "${srcdir}/build-${MINGW_CHOST}"
+  cd "${srcdir}/build-${MINGW_CHOST}"
+
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+  ${MINGW_PREFIX}/bin/cmake.exe \
+    -G"MSYS Makefiles" \
+    -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_TESTING=OFF \
+    "../${_realname}-${pkgver}"
+
+  make
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  make DESTDIR="${pkgdir}" install
+}

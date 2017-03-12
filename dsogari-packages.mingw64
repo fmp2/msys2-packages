@@ -1,0 +1,8 @@
+##
+## 64-bit Mingw-w64 custom repository mirrorlist (managed by dsogari)
+##
+
+## Primary
+## github.com
+SigLevel = Optional
+Server = https://github.com/dsogari/msys2-packages/raw/master/mingw/x86_64

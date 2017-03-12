@@ -1,0 +1,40 @@
+diff -c -r glog.orig/CMakeLists.txt glog/CMakeLists.txt
+*** glog.orig/CMakeLists.txt	2017-03-07 15:07:20.737629600 -0300
+--- glog/CMakeLists.txt	2017-03-07 15:05:27.068167100 -0300
+***************
+*** 340,346 ****
+  set (CMAKE_VISIBILITY_INLINES_HIDDEN 1)
+  
+  set (GLOG_PUBLIC_H
+-   ${CMAKE_CURRENT_BINARY_DIR}/config.h
+    ${CMAKE_CURRENT_BINARY_DIR}/glog/logging.h
+    ${CMAKE_CURRENT_BINARY_DIR}/glog/raw_logging.h
+    ${CMAKE_CURRENT_BINARY_DIR}/glog/stl_logging.h
+--- 340,345 ----
+***************
+*** 350,355 ****
+--- 349,355 ----
+  
+  set (GLOG_SRCS
+    ${GLOG_PUBLIC_H}
++   ${CMAKE_CURRENT_BINARY_DIR}/config.h
+    src/base/commandlineflags.h
+    src/base/googleinit.h
+    src/base/mutex.h
+diff -c -r glog.orig/src/logging_unittest.cc glog/src/logging_unittest.cc
+*** glog.orig/src/logging_unittest.cc	2017-03-07 15:07:20.795263900 -0300
+--- glog/src/logging_unittest.cc	2017-03-07 15:05:27.079207600 -0300
+***************
+*** 317,323 ****
+--- 317,327 ----
+    const char const_s[] = "const array";
+    RAW_LOG(INFO, "%s", const_s);
+    void* p = reinterpret_cast<void*>(0x12345678);
++ #if _WIN64
++   RAW_LOG(INFO, "ptr %x", p);
++ #else
+    RAW_LOG(INFO, "ptr %p", p);
++ #endif
+    p = NULL;
+    RAW_LOG(INFO, "ptr %p", p);
+    int j = 1000;
