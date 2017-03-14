@@ -11,17 +11,15 @@ url="http://www.falker.com.br/produto-falkermap-software-agricultura-precisao.ph
 license=('Proprietary')
 makedepends=("git"
              "${MINGW_PACKAGE_PREFIX}-cmake"
-             "${MINGW_PACKAGE_PREFIX}-doxygen"
              "${MINGW_PACKAGE_PREFIX}-gcc"
              "${MINGW_PACKAGE_PREFIX}-ninja")
-checkdepends=("dsogari-${MINGW_PACKAGE_PREFIX}-googletest")
 depends=("${MINGW_PACKAGE_PREFIX}-armadillo"
          "${MINGW_PACKAGE_PREFIX}-boost"
          "${MINGW_PACKAGE_PREFIX}-breakpad"
          "${MINGW_PACKAGE_PREFIX}-ceres-solver"
          "${MINGW_PACKAGE_PREFIX}-libarchive"
          "${MINGW_PACKAGE_PREFIX}-openssl"
-         "${MINGW_PACKAGE_PREFIX}-wkhtmltopdf-git"
+         "dsogari-${MINGW_PACKAGE_PREFIX}-wkhtmltopdf"
          "dsogari-${MINGW_PACKAGE_PREFIX}-cpporm"
          "dsogari-${MINGW_PACKAGE_PREFIX}-gdal"
          "dsogari-${MINGW_PACKAGE_PREFIX}-polymul")
