@@ -11,8 +11,7 @@ pkgdesc="Chromium Embedded Framework (mingw-w64)"
 arch=('any')
 url="https://bitbucket.org/chromiumembedded/cef"
 license=('BSD')
-makedepends=("${MINGW_PACKAGE_PREFIX}-cmake"
-             "${MINGW_PACKAGE_PREFIX}-ninja")
+makedepends=("${MINGW_PACKAGE_PREFIX}-cmake")
 declare -A dirs=(\
   ["i686-w64-mingw32"]="cef_binary_${pkgver}_windows32"\
   ["x86_64-w64-mingw32"]="cef_binary_${pkgver}_windows64"\

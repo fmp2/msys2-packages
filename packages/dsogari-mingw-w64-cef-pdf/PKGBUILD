@@ -1,0 +1,44 @@
+# Maintainer: Diego Sogari <diego.sogari@gmail.com>
+
+_realname=cef-pdf
+pkgbase=dsogari-mingw-w64-${_realname}
+pkgname="dsogari-${MINGW_PACKAGE_PREFIX}-${_realname}"
+provides=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+conflicts=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+pkgver=0.2.1
+pkgrel=1
+pkgdesc="HTML to PDF utility based on CEF (mingw-w64)"
+arch=('any')
+url="https://github.com/spajak/cef-pdf"
+license=('MIT')
+makedepends=("${MINGW_PACKAGE_PREFIX}-cmake")
+#depends=("dsogari-${MINGW_PACKAGE_PREFIX}-cef")
+source=("${_realname}-${pkgver}.tar.gz::https://github.com/spajak/cef-pdf/archive/v${pkgver}.tar.gz"
+        "${_realname}-0.2.1.patch")
+sha256sums=('2663e45c67dd81f1f9243a12489b177a5cee8fa6f1dd33345088173a5d02f2fe'
+            '0e4cddbd91afe79567a1da0103b5f6a05973c2971860f6538acef1dba74a971d')
+
+prepare() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+  patch -Np1 -i "../${_realname}-0.2.1.patch"
+}
+
+build() {
+  rm -rf "${srcdir}/build-${MINGW_CHOST}"
+  mkdir "${srcdir}/build-${MINGW_CHOST}"
+  cd "${srcdir}/build-${MINGW_CHOST}"
+
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+  ${MINGW_PREFIX}/bin/cmake.exe \
+    -G"MSYS Makefiles" \
+    -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
+    -DCMAKE_BUILD_TYPE=Release \
+    "../${_realname}-${pkgver}"
+
+  make
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  make DESTDIR="${pkgdir}" install
+}
