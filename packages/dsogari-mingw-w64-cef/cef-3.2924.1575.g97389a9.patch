@@ -1,6 +1,23 @@
-diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/cmake/cef_variables.cmake cef_binary_3.2987.1596.gc2b4638_windows64/cmake/cef_variables.cmake
-*** cef_binary_3.2987.1596.gc2b4638_windows64.orig/cmake/cef_variables.cmake	2017-03-17 03:11:14.000000000 -0300
---- cef_binary_3.2987.1596.gc2b4638_windows64/cmake/cef_variables.cmake	2017-03-20 01:19:48.460137600 -0300
+diff -c -r cef.orig/cmake/cef_variables.cmake cef/cmake/cef_variables.cmake
+*** cef.orig/cmake/cef_variables.cmake	2017-03-01 04:09:20.000000000 -0300
+--- cef/cmake/cef_variables.cmake	2017-03-20 17:23:49.447911200 -0300
+***************
+*** 55,61 ****
+  
+  # Shared compiler/linker flags.
+  list(APPEND CEF_COMPILER_DEFINES
+!   # Allow C++ programs to use stdint.h macros specified in the C99 standard that aren't 
+    # in the C++ standard (e.g. UINT8_MAX, INT64_MIN, etc)
+    __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
+    )
+--- 55,61 ----
+  
+  # Shared compiler/linker flags.
+  list(APPEND CEF_COMPILER_DEFINES
+!   # Allow C++ programs to use stdint.h macros specified in the C99 standard that aren't
+    # in the C++ standard (e.g. UINT8_MAX, INT64_MIN, etc)
+    __STDC_CONSTANT_MACROS __STDC_FORMAT_MACROS
+    )
 ***************
 *** 304,310 ****
   # Windows configuration.
@@ -159,9 +176,9 @@ diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/cmake/cef_variables.cm
     # Configure use of the sandbox.
     option(USE_SANDBOX "Enable or disable use of the sandbox." ON)
     if(USE_SANDBOX AND NOT MSVC_VERSION EQUAL 1900)
-diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/include/base/cef_atomicops.h cef_binary_3.2987.1596.gc2b4638_windows64/include/base/cef_atomicops.h
-*** cef_binary_3.2987.1596.gc2b4638_windows64.orig/include/base/cef_atomicops.h	2017-03-17 03:11:14.000000000 -0300
---- cef_binary_3.2987.1596.gc2b4638_windows64/include/base/cef_atomicops.h	2017-03-19 23:34:49.698668700 -0300
+diff -c -r cef.orig/include/base/cef_atomicops.h cef/include/base/cef_atomicops.h
+*** cef.orig/include/base/cef_atomicops.h	2017-03-01 04:09:20.000000000 -0300
+--- cef/include/base/cef_atomicops.h	2017-03-20 17:21:07.315454200 -0300
 ***************
 *** 177,183 ****
   }  // namespace base
@@ -179,9 +196,41 @@ diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/include/base/cef_atomi
   #include "include/base/internal/cef_atomicops_x86_msvc.h"
   #elif defined(OS_MACOSX)
   #include "include/base/internal/cef_atomicops_mac.h"
-diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/include/base/internal/cef_atomicops_x86_msvc.h cef_binary_3.2987.1596.gc2b4638_windows64/include/base/internal/cef_atomicops_x86_msvc.h
-*** cef_binary_3.2987.1596.gc2b4638_windows64.orig/include/base/internal/cef_atomicops_x86_msvc.h	2017-03-17 03:11:48.000000000 -0300
---- cef_binary_3.2987.1596.gc2b4638_windows64/include/base/internal/cef_atomicops_x86_msvc.h	2017-03-19 23:35:27.588427700 -0300
+diff -c -r cef.orig/include/base/cef_bind_helpers.h cef/include/base/cef_bind_helpers.h
+*** cef.orig/include/base/cef_bind_helpers.h	2017-03-01 04:09:20.000000000 -0300
+--- cef/include/base/cef_bind_helpers.h	2017-03-20 17:22:38.794554900 -0300
+***************
+*** 272,284 ****
+  // MSVC warns when you try to use Base if T has a private destructor, the
+  // common pattern for refcounted types. It does this even though no attempt to
+  // instantiate Base is made.  We disable the warning for this definition.
+! #if defined(OS_WIN)
+  #pragma warning(push)
+  #pragma warning(disable:4624)
+  #endif
+    struct Base : public T, public BaseMixin {
+    };
+! #if defined(OS_WIN)
+  #pragma warning(pop)
+  #endif
+  
+--- 272,284 ----
+  // MSVC warns when you try to use Base if T has a private destructor, the
+  // common pattern for refcounted types. It does this even though no attempt to
+  // instantiate Base is made.  We disable the warning for this definition.
+! #if defined(_MSC_VER)
+  #pragma warning(push)
+  #pragma warning(disable:4624)
+  #endif
+    struct Base : public T, public BaseMixin {
+    };
+! #if defined(_MSC_VER)
+  #pragma warning(pop)
+  #endif
+  
+diff -c -r cef.orig/include/base/internal/cef_atomicops_x86_msvc.h cef/include/base/internal/cef_atomicops_x86_msvc.h
+*** cef.orig/include/base/internal/cef_atomicops_x86_msvc.h	2017-03-01 04:10:00.000000000 -0300
+--- cef/include/base/internal/cef_atomicops_x86_msvc.h	2017-03-20 17:21:07.315454200 -0300
 ***************
 *** 81,87 ****
     return Barrier_AtomicIncrement(ptr, increment);
@@ -199,9 +248,9 @@ diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/include/base/internal/
   #error "We require at least vs2005 for MemoryBarrier"
   #endif
   inline void MemoryBarrier() {
-diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/include/internal/cef_string_wrappers.h cef_binary_3.2987.1596.gc2b4638_windows64/include/internal/cef_string_wrappers.h
-*** cef_binary_3.2987.1596.gc2b4638_windows64.orig/include/internal/cef_string_wrappers.h	2017-03-17 03:11:14.000000000 -0300
---- cef_binary_3.2987.1596.gc2b4638_windows64/include/internal/cef_string_wrappers.h	2017-03-19 23:36:07.077311800 -0300
+diff -c -r cef.orig/include/internal/cef_string_wrappers.h cef/include/internal/cef_string_wrappers.h
+*** cef.orig/include/internal/cef_string_wrappers.h	2017-03-01 04:09:20.000000000 -0300
+--- cef/include/internal/cef_string_wrappers.h	2017-03-20 17:21:07.315454200 -0300
 ***************
 *** 31,36 ****
 --- 31,37 ----
@@ -212,9 +261,9 @@ diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/include/internal/cef_s
   #include <memory.h>
   #include <string>
   
-diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/tests/cefclient/CMakeLists.txt cef_binary_3.2987.1596.gc2b4638_windows64/tests/cefclient/CMakeLists.txt
-*** cef_binary_3.2987.1596.gc2b4638_windows64.orig/tests/cefclient/CMakeLists.txt	2017-03-17 03:11:14.000000000 -0300
---- cef_binary_3.2987.1596.gc2b4638_windows64/tests/cefclient/CMakeLists.txt	2017-03-20 00:47:53.195817600 -0300
+diff -c -r cef.orig/tests/cefclient/CMakeLists.txt cef/tests/cefclient/CMakeLists.txt
+*** cef.orig/tests/cefclient/CMakeLists.txt	2017-03-01 04:09:20.000000000 -0300
+--- cef/tests/cefclient/CMakeLists.txt	2017-03-20 17:28:17.547034100 -0300
 ***************
 *** 488,495 ****
     # Executable target.
@@ -254,9 +303,9 @@ diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/tests/cefclient/CMakeL
   
     # Copy CEF binary and resource files to the target output directory.
     COPY_FILES("${CEF_TARGET}" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
-diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/tests/cefsimple/CMakeLists.txt cef_binary_3.2987.1596.gc2b4638_windows64/tests/cefsimple/CMakeLists.txt
-*** cef_binary_3.2987.1596.gc2b4638_windows64.orig/tests/cefsimple/CMakeLists.txt	2017-03-17 03:11:14.000000000 -0300
---- cef_binary_3.2987.1596.gc2b4638_windows64/tests/cefsimple/CMakeLists.txt	2017-03-20 00:47:47.607882200 -0300
+diff -c -r cef.orig/tests/cefsimple/CMakeLists.txt cef/tests/cefsimple/CMakeLists.txt
+*** cef.orig/tests/cefsimple/CMakeLists.txt	2017-03-01 04:09:20.000000000 -0300
+--- cef/tests/cefsimple/CMakeLists.txt	2017-03-20 17:29:50.465691800 -0300
 ***************
 *** 183,189 ****
     add_executable(${CEF_TARGET} WIN32 ${CEFSIMPLE_SRCS})
@@ -294,9 +343,9 @@ diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/tests/cefsimple/CMakeL
   
     # Copy binary and resource files to the target output directory.
     COPY_FILES("${CEF_TARGET}" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
-diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/tests/ceftests/CMakeLists.txt cef_binary_3.2987.1596.gc2b4638_windows64/tests/ceftests/CMakeLists.txt
-*** cef_binary_3.2987.1596.gc2b4638_windows64.orig/tests/ceftests/CMakeLists.txt	2017-03-17 03:11:14.000000000 -0300
---- cef_binary_3.2987.1596.gc2b4638_windows64/tests/ceftests/CMakeLists.txt	2017-03-20 00:42:04.431771500 -0300
+diff -c -r cef.orig/tests/ceftests/CMakeLists.txt cef/tests/ceftests/CMakeLists.txt
+*** cef.orig/tests/ceftests/CMakeLists.txt	2017-03-01 04:09:20.000000000 -0300
+--- cef/tests/ceftests/CMakeLists.txt	2017-03-20 17:29:47.186302700 -0300
 ***************
 *** 402,413 ****
     add_executable(${CEF_TARGET} WIN32 ${UNITTESTS_SRCS} ${UNITTESTS_RESOURCES_SRCS})
@@ -345,9 +394,9 @@ diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/tests/ceftests/CMakeLi
   
     # Copy CEF binary and resource files to the target output directory.
     COPY_FILES("${CEF_TARGET}" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
-diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/tests/ceftests/run_all_unittests.cc cef_binary_3.2987.1596.gc2b4638_windows64/tests/ceftests/run_all_unittests.cc
-*** cef_binary_3.2987.1596.gc2b4638_windows64.orig/tests/ceftests/run_all_unittests.cc	2017-03-17 03:11:14.000000000 -0300
---- cef_binary_3.2987.1596.gc2b4638_windows64/tests/ceftests/run_all_unittests.cc	2017-03-20 00:51:48.838037400 -0300
+diff -c -r cef.orig/tests/ceftests/run_all_unittests.cc cef/tests/ceftests/run_all_unittests.cc
+*** cef.orig/tests/ceftests/run_all_unittests.cc	2017-03-01 04:09:20.000000000 -0300
+--- cef/tests/ceftests/run_all_unittests.cc	2017-03-20 17:21:07.362326500 -0300
 ***************
 *** 110,116 ****
   
@@ -365,9 +414,9 @@ diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/tests/ceftests/run_all
     // Manages the life span of the sandbox information object.
     CefScopedSandboxInfo scoped_sandbox;
     windows_sandbox_info = scoped_sandbox.sandbox_info();
-diff -r -c cef_binary_3.2987.1596.gc2b4638_windows64.orig/tests/gtest/CMakeLists.txt cef_binary_3.2987.1596.gc2b4638_windows64/tests/gtest/CMakeLists.txt
-*** cef_binary_3.2987.1596.gc2b4638_windows64.orig/tests/gtest/CMakeLists.txt	2017-03-17 03:11:14.000000000 -0300
---- cef_binary_3.2987.1596.gc2b4638_windows64/tests/gtest/CMakeLists.txt	2017-03-19 23:37:08.784135000 -0300
+diff -c -r cef.orig/tests/gtest/CMakeLists.txt cef/tests/gtest/CMakeLists.txt
+*** cef.orig/tests/gtest/CMakeLists.txt	2017-03-01 04:09:20.000000000 -0300
+--- cef/tests/gtest/CMakeLists.txt	2017-03-20 17:29:43.917759800 -0300
 ***************
 *** 24,30 ****
   # All dependent targets are unit tests.
