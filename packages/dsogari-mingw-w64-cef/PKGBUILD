@@ -15,7 +15,7 @@ pkgname="dsogari-${MINGW_PACKAGE_PREFIX}-${_realname}"
 provides=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 conflicts=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=3.2924.1575.g97389a9
-pkgrel=2
+pkgrel=3
 pkgdesc="Chromium Embedded Framework (mingw-w64)"
 arch=('any')
 url="https://bitbucket.org/chromiumembedded/cef"
@@ -24,7 +24,7 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cmake")
 source=("http://opensource.spotify.com/cefbuilds/${_dir}.tar.bz2"
         "${_realname}-3.2924.1575.g97389a9.patch")
 sha256sums=("${_hash}"
-            'b1f818bcf87d84b953c4dc8aec084ba0fe1f9c74ad2625825dd33db3911636c6')
+            'bf1716c3850c9045be78c330367244d17d00fabd7cb0c460a444765a659f00fb')
 
 prepare() {
   cd "${srcdir}/${_dir}"
