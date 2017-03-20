@@ -16,7 +16,7 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cmake")
 source=("${_realname}-${pkgver}.tar.gz::https://github.com/spajak/cef-pdf/archive/v${pkgver}.tar.gz"
         "${_realname}-0.2.1.patch")
 sha256sums=('2663e45c67dd81f1f9243a12489b177a5cee8fa6f1dd33345088173a5d02f2fe'
-            '0e4cddbd91afe79567a1da0103b5f6a05973c2971860f6538acef1dba74a971d')
+            '8782a1b502321004119ed6dfcd223cf04db0655db7b2c0b72b46a25b3bcf6150')
 
 prepare() {
   cd "${srcdir}/${_realname}-${pkgver}"
