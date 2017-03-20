@@ -11,8 +11,8 @@ pkgdesc="HTML to PDF utility based on CEF (mingw-w64)"
 arch=('any')
 url="https://github.com/spajak/cef-pdf"
 license=('MIT')
-makedepends=("${MINGW_PACKAGE_PREFIX}-cmake")
-#depends=("dsogari-${MINGW_PACKAGE_PREFIX}-cef")
+makedepends=("${MINGW_PACKAGE_PREFIX}-cmake"
+             "dsogari-${MINGW_PACKAGE_PREFIX}-cef")
 source=("${_realname}-${pkgver}.tar.gz::https://github.com/spajak/cef-pdf/archive/v${pkgver}.tar.gz"
         "${_realname}-0.2.1.patch")
 sha256sums=('2663e45c67dd81f1f9243a12489b177a5cee8fa6f1dd33345088173a5d02f2fe'
@@ -21,6 +21,8 @@ sha256sums=('2663e45c67dd81f1f9243a12489b177a5cee8fa6f1dd33345088173a5d02f2fe'
 prepare() {
   cd "${srcdir}/${_realname}-${pkgver}"
   patch -Np1 -i "../${_realname}-0.2.1.patch"
+  cef_root=$(cygpath -m ${MINGW_PREFIX}/opt/cef)
+  sed -e "s|set(CEF_ROOT \".*\")|set(CEF_ROOT \"${cef_root}\")|" -i ./CMakeLists.txt
 }
 
 build() {
@@ -39,6 +41,7 @@ build() {
 }
 
 package() {
-  cd "${srcdir}/build-${MINGW_CHOST}"
-  make DESTDIR="${pkgdir}" install
+  mkdir -p "${pkgdir}${MINGW_PREFIX}/opt"
+  mv "build-${MINGW_CHOST}/src/Release" "${pkgdir}${MINGW_PREFIX}/opt/cef-pdf"
+  mv "build-${MINGW_CHOST}/src/cef-pdf.exe" "${pkgdir}${MINGW_PREFIX}/opt/cef-pdf"
 }
