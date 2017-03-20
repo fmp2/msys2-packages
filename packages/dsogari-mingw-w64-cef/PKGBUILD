@@ -1,0 +1,53 @@
+# Maintainer: Diego Sogari <diego.sogari@gmail.com>
+
+_realname=cef
+pkgbase=dsogari-mingw-w64-${_realname}
+pkgname="dsogari-${MINGW_PACKAGE_PREFIX}-${_realname}"
+provides=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+conflicts=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+pkgver=2987
+pkgrel=1
+pkgdesc="Chromium Embedded Framework (mingw-w64)"
+arch=('any')
+url="https://bitbucket.org/chromiumembedded/cef"
+license=('BSD')
+makedepends=("${MINGW_PACKAGE_PREFIX}-gcc"
+             "${MINGW_PACKAGE_PREFIX}-cmake")
+source=("${_realname}-${pkgver}-i686.tar.bz2::http://opensource.spotify.com/cefbuilds/cef_binary_3.2987.1596.gc2b4638_windows32.tar.bz2"
+        "${_realname}-${pkgver}-x86_64.tar.bz2::http://opensource.spotify.com/cefbuilds/cef_binary_3.2987.1596.gc2b4638_windows64.tar.bz2"
+        "${_realname}-2987.patch")
+sha256sums=('d2a4adfbc777afddadf38290666ca63ffb1cface4096ba651034168732609ff2'
+            '5abaaa537237ba1c7a3f44c1f999c1310c2ec41569b6c72af997f203718d724f'
+            '277f896c60abd9e23aa9f83b3a4bdcd672ee9c454cc4b795a390d80c273e13a3')
+
+prepare() {
+  # detect architecture
+  if [[ ${MINGW_CHOST} == *"i686"* ]]; then
+    dir=cef_binary_3.${pkgver}.1596.gc2b4638_windows32
+  else
+    dir=cef_binary_3.${pkgver}.1596.gc2b4638_windows64
+  fi
+
+  cd "${srcdir}/${dir}"
+  patch -Np1 -i "../${_realname}-2987.patch"
+}
+
+build() {
+  rm -rf "${srcdir}/build-${MINGW_CHOST}"
+  mkdir "${srcdir}/build-${MINGW_CHOST}"
+  cd "${srcdir}/build-${MINGW_CHOST}"
+
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+  ${MINGW_PREFIX}/bin/cmake.exe \
+    -G"MSYS Makefiles" \
+    -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
+    -DCMAKE_BUILD_TYPE=Release \
+    "../${dir}"
+
+  make
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  make DESTDIR="${pkgdir}" install
+}
