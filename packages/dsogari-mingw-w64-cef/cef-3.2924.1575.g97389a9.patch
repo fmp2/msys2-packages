@@ -1,6 +1,27 @@
+diff -c -r cef.orig/cmake/cef_macros.cmake cef/cmake/cef_macros.cmake
+*** cef.orig/cmake/cef_macros.cmake	2017-03-01 04:09:20.000000000 -0300
+--- cef/cmake/cef_macros.cmake	2017-03-22 04:00:16.882314000 -0300
+***************
+*** 82,88 ****
+  # Determine the target output directory based on platform and generator.
+  macro(SET_CEF_TARGET_OUT_DIR)
+    if(${CMAKE_GENERATOR} STREQUAL "Ninja" OR
+!      ${CMAKE_GENERATOR} STREQUAL "Unix Makefiles")
+      # By default Ninja and Make builds don't create a subdirectory named after
+      # the configuration.
+      set(CEF_TARGET_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+--- 82,89 ----
+  # Determine the target output directory based on platform and generator.
+  macro(SET_CEF_TARGET_OUT_DIR)
+    if(${CMAKE_GENERATOR} STREQUAL "Ninja" OR
+!      ${CMAKE_GENERATOR} STREQUAL "Unix Makefiles" OR
+!      ${CMAKE_GENERATOR} STREQUAL "MSYS Makefiles")
+      # By default Ninja and Make builds don't create a subdirectory named after
+      # the configuration.
+      set(CEF_TARGET_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
 diff -c -r cef.orig/cmake/cef_variables.cmake cef/cmake/cef_variables.cmake
 *** cef.orig/cmake/cef_variables.cmake	2017-03-01 04:09:20.000000000 -0300
---- cef/cmake/cef_variables.cmake	2017-03-20 19:55:51.540893600 -0300
+--- cef/cmake/cef_variables.cmake	2017-03-22 03:59:41.375577600 -0300
 ***************
 *** 304,310 ****
   # Windows configuration.
@@ -161,7 +182,7 @@ diff -c -r cef.orig/cmake/cef_variables.cmake cef/cmake/cef_variables.cmake
     if(USE_SANDBOX AND NOT MSVC_VERSION EQUAL 1900)
 diff -c -r cef.orig/include/base/cef_atomicops.h cef/include/base/cef_atomicops.h
 *** cef.orig/include/base/cef_atomicops.h	2017-03-01 04:09:20.000000000 -0300
---- cef/include/base/cef_atomicops.h	2017-03-20 19:51:25.822673800 -0300
+--- cef/include/base/cef_atomicops.h	2017-03-22 03:57:09.229234300 -0300
 ***************
 *** 177,183 ****
   }  // namespace base
@@ -181,7 +202,7 @@ diff -c -r cef.orig/include/base/cef_atomicops.h cef/include/base/cef_atomicops.
   #include "include/base/internal/cef_atomicops_mac.h"
 diff -c -r cef.orig/include/base/cef_bind_helpers.h cef/include/base/cef_bind_helpers.h
 *** cef.orig/include/base/cef_bind_helpers.h	2017-03-01 04:09:20.000000000 -0300
---- cef/include/base/cef_bind_helpers.h	2017-03-20 19:51:25.825670000 -0300
+--- cef/include/base/cef_bind_helpers.h	2017-03-22 03:57:09.229234300 -0300
 ***************
 *** 272,284 ****
   // MSVC warns when you try to use Base if T has a private destructor, the
@@ -213,7 +234,7 @@ diff -c -r cef.orig/include/base/cef_bind_helpers.h cef/include/base/cef_bind_he
   
 diff -c -r cef.orig/include/base/internal/cef_atomicops_x86_msvc.h cef/include/base/internal/cef_atomicops_x86_msvc.h
 *** cef.orig/include/base/internal/cef_atomicops_x86_msvc.h	2017-03-01 04:10:00.000000000 -0300
---- cef/include/base/internal/cef_atomicops_x86_msvc.h	2017-03-20 19:51:25.827700100 -0300
+--- cef/include/base/internal/cef_atomicops_x86_msvc.h	2017-03-22 03:57:09.244859700 -0300
 ***************
 *** 81,87 ****
     return Barrier_AtomicIncrement(ptr, increment);
@@ -233,7 +254,7 @@ diff -c -r cef.orig/include/base/internal/cef_atomicops_x86_msvc.h cef/include/b
   inline void MemoryBarrier() {
 diff -c -r cef.orig/include/internal/cef_string_wrappers.h cef/include/internal/cef_string_wrappers.h
 *** cef.orig/include/internal/cef_string_wrappers.h	2017-03-01 04:09:20.000000000 -0300
---- cef/include/internal/cef_string_wrappers.h	2017-03-20 19:51:25.829701200 -0300
+--- cef/include/internal/cef_string_wrappers.h	2017-03-22 03:57:09.260486500 -0300
 ***************
 *** 31,36 ****
 --- 31,37 ----
@@ -246,7 +267,7 @@ diff -c -r cef.orig/include/internal/cef_string_wrappers.h cef/include/internal/
   
 diff -c -r cef.orig/tests/cefclient/CMakeLists.txt cef/tests/cefclient/CMakeLists.txt
 *** cef.orig/tests/cefclient/CMakeLists.txt	2017-03-01 04:09:20.000000000 -0300
---- cef/tests/cefclient/CMakeLists.txt	2017-03-20 19:51:25.831721000 -0300
+--- cef/tests/cefclient/CMakeLists.txt	2017-03-22 04:09:50.796168500 -0300
 ***************
 *** 488,495 ****
     # Executable target.
@@ -288,7 +309,7 @@ diff -c -r cef.orig/tests/cefclient/CMakeLists.txt cef/tests/cefclient/CMakeList
     COPY_FILES("${CEF_TARGET}" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
 diff -c -r cef.orig/tests/cefsimple/CMakeLists.txt cef/tests/cefsimple/CMakeLists.txt
 *** cef.orig/tests/cefsimple/CMakeLists.txt	2017-03-01 04:09:20.000000000 -0300
---- cef/tests/cefsimple/CMakeLists.txt	2017-03-20 19:51:25.833704000 -0300
+--- cef/tests/cefsimple/CMakeLists.txt	2017-03-22 04:10:05.625478200 -0300
 ***************
 *** 183,189 ****
     add_executable(${CEF_TARGET} WIN32 ${CEFSIMPLE_SRCS})
@@ -328,7 +349,7 @@ diff -c -r cef.orig/tests/cefsimple/CMakeLists.txt cef/tests/cefsimple/CMakeList
     COPY_FILES("${CEF_TARGET}" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
 diff -c -r cef.orig/tests/ceftests/CMakeLists.txt cef/tests/ceftests/CMakeLists.txt
 *** cef.orig/tests/ceftests/CMakeLists.txt	2017-03-01 04:09:20.000000000 -0300
---- cef/tests/ceftests/CMakeLists.txt	2017-03-20 19:51:25.836706300 -0300
+--- cef/tests/ceftests/CMakeLists.txt	2017-03-22 04:04:22.079985400 -0300
 ***************
 *** 402,413 ****
     add_executable(${CEF_TARGET} WIN32 ${UNITTESTS_SRCS} ${UNITTESTS_RESOURCES_SRCS})
@@ -379,7 +400,7 @@ diff -c -r cef.orig/tests/ceftests/CMakeLists.txt cef/tests/ceftests/CMakeLists.
     COPY_FILES("${CEF_TARGET}" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "${CEF_TARGET_OUT_DIR}")
 diff -c -r cef.orig/tests/ceftests/run_all_unittests.cc cef/tests/ceftests/run_all_unittests.cc
 *** cef.orig/tests/ceftests/run_all_unittests.cc	2017-03-01 04:09:20.000000000 -0300
---- cef/tests/ceftests/run_all_unittests.cc	2017-03-20 19:51:25.838708100 -0300
+--- cef/tests/ceftests/run_all_unittests.cc	2017-03-22 03:57:09.298247500 -0300
 ***************
 *** 110,116 ****
   
@@ -399,7 +420,7 @@ diff -c -r cef.orig/tests/ceftests/run_all_unittests.cc cef/tests/ceftests/run_a
     windows_sandbox_info = scoped_sandbox.sandbox_info();
 diff -c -r cef.orig/tests/gtest/CMakeLists.txt cef/tests/gtest/CMakeLists.txt
 *** cef.orig/tests/gtest/CMakeLists.txt	2017-03-01 04:09:20.000000000 -0300
---- cef/tests/gtest/CMakeLists.txt	2017-03-20 19:51:25.841709700 -0300
+--- cef/tests/gtest/CMakeLists.txt	2017-03-22 04:05:20.696730900 -0300
 ***************
 *** 24,30 ****
   # All dependent targets are unit tests.
