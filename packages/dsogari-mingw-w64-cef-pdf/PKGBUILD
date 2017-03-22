@@ -5,43 +5,37 @@ pkgbase=dsogari-mingw-w64-${_realname}
 pkgname="dsogari-${MINGW_PACKAGE_PREFIX}-${_realname}"
 provides=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 conflicts=("${MINGW_PACKAGE_PREFIX}-${_realname}")
-pkgver=0.2.1
+pkgver=0.3.0
 pkgrel=1
 pkgdesc="HTML to PDF utility based on CEF (mingw-w64)"
 arch=('any')
-url="https://github.com/spajak/cef-pdf"
+url="https://github.com/dsogari/cef-pdf"
 license=('MIT')
 makedepends=("${MINGW_PACKAGE_PREFIX}-cmake"
+             "${MINGW_PACKAGE_PREFIX}-ninja"
              "dsogari-${MINGW_PACKAGE_PREFIX}-cef")
-source=("${_realname}-${pkgver}.tar.gz::https://github.com/spajak/cef-pdf/archive/v${pkgver}.tar.gz"
-        "${_realname}-0.2.1.patch")
-sha256sums=('2663e45c67dd81f1f9243a12489b177a5cee8fa6f1dd33345088173a5d02f2fe'
-            '8782a1b502321004119ed6dfcd223cf04db0655db7b2c0b72b46a25b3bcf6150')
-
-prepare() {
-  cd "${srcdir}/${_realname}-${pkgver}"
-  patch -Np1 -i "../${_realname}-0.2.1.patch"
-  cef_root=$(cygpath -m ${MINGW_PREFIX}/opt/cef)
-  sed -e "s|set(CEF_ROOT \".*\")|set(CEF_ROOT \"${cef_root}\")|" -i ./CMakeLists.txt
-}
+source=("${_realname}-${pkgver}.tar.gz::https://github.com/dsogari/cef-pdf/archive/v${pkgver}.tar.gz")
+sha256sums=('75b5e11d59dafa74b9984ff1bd8f08ad4e12d9a4af42fcaab4adedc6a2b9f6a0')
 
 build() {
   rm -rf "${srcdir}/build-${MINGW_CHOST}"
   mkdir "${srcdir}/build-${MINGW_CHOST}"
   cd "${srcdir}/build-${MINGW_CHOST}"
 
+  # for some reason -G"MSYS Makefiles" does not work here
   MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
   ${MINGW_PREFIX}/bin/cmake.exe \
-    -G"MSYS Makefiles" \
+    -GNinja \
     -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
     -DCMAKE_BUILD_TYPE=Release \
+    -DCEF_ROOT=$(cygpath -m ${MINGW_PREFIX}/opt/cef) \
     "../${_realname}-${pkgver}"
 
-  make
+  ninja
 }
 
 package() {
   mkdir -p "${pkgdir}${MINGW_PREFIX}/opt"
   mv "build-${MINGW_CHOST}/src/Release" "${pkgdir}${MINGW_PREFIX}/opt/cef-pdf"
-  mv "build-${MINGW_CHOST}/src/cef-pdf.exe" "${pkgdir}${MINGW_PREFIX}/opt/cef-pdf"
+  mv "build-${MINGW_CHOST}/src/libcefpdf.dll.a" "${pkgdir}${MINGW_PREFIX}/opt/cef-pdf"
 }
