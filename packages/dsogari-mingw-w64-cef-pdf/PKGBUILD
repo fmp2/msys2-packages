@@ -12,30 +12,27 @@ arch=('any')
 url="https://github.com/dsogari/cef-pdf"
 license=('MIT')
 makedepends=("${MINGW_PACKAGE_PREFIX}-cmake"
-             "${MINGW_PACKAGE_PREFIX}-ninja"
              "dsogari-${MINGW_PACKAGE_PREFIX}-cef")
 source=("${_realname}-${pkgver}.tar.gz::https://github.com/dsogari/cef-pdf/archive/v${pkgver}.tar.gz")
-sha256sums=('75b5e11d59dafa74b9984ff1bd8f08ad4e12d9a4af42fcaab4adedc6a2b9f6a0')
+sha256sums=('79279128bbf21a1cb6b136fde5de8545c05f4550acc10fd568c1654f26ceba4e')
 
 build() {
   rm -rf "${srcdir}/build-${MINGW_CHOST}"
   mkdir "${srcdir}/build-${MINGW_CHOST}"
   cd "${srcdir}/build-${MINGW_CHOST}"
 
-  # for some reason -G"MSYS Makefiles" does not work here
   MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
   ${MINGW_PREFIX}/bin/cmake.exe \
-    -GNinja \
+    -G"MSYS Makefiles" \
     -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCEF_ROOT=$(cygpath -m ${MINGW_PREFIX}/opt/cef) \
     "../${_realname}-${pkgver}"
 
-  ninja
+  make
 }
 
 package() {
   mkdir -p "${pkgdir}${MINGW_PREFIX}/opt"
   mv "build-${MINGW_CHOST}/src/Release" "${pkgdir}${MINGW_PREFIX}/opt/cef-pdf"
-  mv "build-${MINGW_CHOST}/src/libcefpdf.dll.a" "${pkgdir}${MINGW_PREFIX}/opt/cef-pdf"
 }
