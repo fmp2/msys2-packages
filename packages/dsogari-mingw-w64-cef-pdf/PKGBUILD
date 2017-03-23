@@ -6,13 +6,14 @@ pkgname="dsogari-${MINGW_PACKAGE_PREFIX}-${_realname}"
 provides=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 conflicts=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=0.3.0
-pkgrel=2
+pkgrel=3
 pkgdesc="HTML to PDF utility based on CEF (mingw-w64)"
 arch=('any')
 url="https://github.com/dsogari/cef-pdf"
 license=('MIT')
 makedepends=("${MINGW_PACKAGE_PREFIX}-cmake"
              "dsogari-${MINGW_PACKAGE_PREFIX}-cef")
+depends=("${MINGW_PACKAGE_PREFIX}-boost")
 source=("${_realname}-${pkgver}.tar.gz::https://github.com/dsogari/cef-pdf/archive/v${pkgver}.tar.gz")
 sha256sums=('c56c6fab59586837cab39e72731701b6a1b7256925eca52b77071c3c802597a0')
 
