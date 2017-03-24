@@ -15,7 +15,7 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cmake"
              "dsogari-${MINGW_PACKAGE_PREFIX}-cef")
 depends=("${MINGW_PACKAGE_PREFIX}-boost")
 source=("${_realname}-${pkgver}.tar.gz::https://github.com/dsogari/cef-pdf/archive/v${pkgver}.tar.gz")
-sha256sums=('c56c6fab59586837cab39e72731701b6a1b7256925eca52b77071c3c802597a0')
+sha256sums=('ff1b8ee61d574c09ce3774894e92fd5eadf33d87d3c2225ebdeb32cacebc756c')
 
 build() {
   rm -rf "${srcdir}/build-${MINGW_CHOST}"
