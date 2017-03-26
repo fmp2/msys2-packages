@@ -3,7 +3,7 @@
 _realname=cpporm
 pkgbase=dsogari-mingw-w64-${_realname}
 pkgname="dsogari-${MINGW_PACKAGE_PREFIX}-${_realname}"
-pkgver=0.2.16
+pkgver=0.2.17
 pkgrel=1
 pkgdesc="Simple ORM library with SQL parser (mingw-w64)"
 arch=('any')
@@ -18,7 +18,7 @@ depends=("${MINGW_PACKAGE_PREFIX}-boost"
 checkdepends=("${MINGW_PACKAGE_PREFIX}-googletest")
 optdepends=("dsogari-${MINGW_PACKAGE_PREFIX}-soci")
 source=("${_realname}-${pkgver}.tar.gz::https://codeload.github.com/dsogari/cpporm/tar.gz/v${pkgver}")
-sha256sums=('81fdcd06d2305879c080e44dcaf681bbdebcf31e0facb924a42c0f12c948eedd')
+sha256sums=('e9a75e4f943d56fd23a7fd089cb1606ca6a2ec6f111a5a5209bfcfaa29a1d01f')
 
 build() {
   rm -rf "${srcdir}/build-${MINGW_CHOST}"
