@@ -6,5 +6,5 @@
 *.files     binary
 *.gz        binary
 *.gz.old    binary
-*.patch     binary  # sometimes the patches contain mixed EOL
+*.patch     binary
 *.xz        binary
