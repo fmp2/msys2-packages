@@ -2,11 +2,11 @@
 
 # detect architecture
 if [[ ${MINGW_CHOST} == *"i686"* ]]; then
-  _dir="cef_binary_3.2924.1575.g97389a9_windows32"
-  _hash="c84f7eb44c705823fd6bf50538bcc9dcb5fcfb85636c0248b2c9d222be3eeec7"
+  _dir="cef_binary_3.3029.1611.g44e39a8_windows32_minimal"
+  _hash="cb82efc68d5ac5eadb1645bbd206caa2503710cfc53d5c22fbfe0b4e529511f5"
 else
-  _dir="cef_binary_3.2924.1575.g97389a9_windows64"
-  _hash="a84e1edbdf8dec7b7acc17c6044e10dba14a292f45636d3f32533eb7263ef708"
+  _dir="cef_binary_3.3029.1611.g44e39a8_windows64_minimal"
+  _hash="70fc85028d1a361f45f3d2a0023e517528bb57638f7a6feba7aa05c780215ae2"
 fi
 
 _realname=cef
@@ -14,21 +14,22 @@ pkgbase=dsogari-mingw-w64-${_realname}
 pkgname="dsogari-${MINGW_PACKAGE_PREFIX}-${_realname}"
 provides=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 conflicts=("${MINGW_PACKAGE_PREFIX}-${_realname}")
-pkgver=3.2924.1575.g97389a9
-pkgrel=4
+pkgver=3.3029.1611.g44e39a8
+pkgrel=1
 pkgdesc="Chromium Embedded Framework (mingw-w64)"
 arch=('any')
 url="https://bitbucket.org/chromiumembedded/cef"
 license=('BSD')
 makedepends=("${MINGW_PACKAGE_PREFIX}-cmake")
 source=("http://opensource.spotify.com/cefbuilds/${_dir}.tar.bz2"
-        "${_realname}-3.2924.1575.g97389a9.patch")
+        "${_realname}-3.3029.1611.g44e39a8.patch")
 sha256sums=("${_hash}"
-            'b79488ea72e4d899129dcad990a35874441627c8776ca13e3423375d68eb0b87')
+            '61798a8291bd57750e50050b6319ec58b41f32f9f6519c455460f4b043bbb948')
 
 prepare() {
   cd "${srcdir}/${_dir}"
-  patch --binary -Np1 -i "../${_realname}-3.2924.1575.g97389a9.patch"
+  patch --binary -Np1 -i "../${_realname}-3.3029.1611.g44e39a8.patch"
+  sed -e '/add_subdirectory(tests/d' -i CMakeLists.txt
 }
 
 build() {
@@ -46,14 +47,7 @@ build() {
   make
 }
 
-check() {
-  cd "${srcdir}/build-${MINGW_CHOST}/tests/ceftests/Release"
-  #../ceftests.exe
-}
-
 package() {
   mkdir -p "${pkgdir}${MINGW_PREFIX}/opt"
   mv "${srcdir}/${_dir}" "${pkgdir}${MINGW_PREFIX}/opt/cef"
-  #mv "build-${MINGW_CHOST}/tests/cefclient/Release" "${pkgdir}${MINGW_PREFIX}/opt/cefclient"
-  #mv "build-${MINGW_CHOST}/tests/cefclient/cefclient.exe" "${pkgdir}${MINGW_PREFIX}/opt/cefclient"
 }

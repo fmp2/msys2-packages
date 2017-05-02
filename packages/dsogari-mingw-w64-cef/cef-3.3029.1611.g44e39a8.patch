@@ -1,0 +1,267 @@
+diff -c -r cef.orig/cmake/cef_macros.cmake cef/cmake/cef_macros.cmake
+*** cef.orig/cmake/cef_macros.cmake	2017-04-29 03:29:27.000000000 -0300
+--- cef/cmake/cef_macros.cmake	2017-05-02 17:54:04.774304100 -0300
+***************
+*** 82,88 ****
+  # Determine the target output directory based on platform and generator.
+  macro(SET_CEF_TARGET_OUT_DIR)
+    if(${CMAKE_GENERATOR} STREQUAL "Ninja" OR
+!      ${CMAKE_GENERATOR} STREQUAL "Unix Makefiles")
+      # By default Ninja and Make builds don't create a subdirectory named after
+      # the configuration.
+      set(CEF_TARGET_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+--- 82,89 ----
+  # Determine the target output directory based on platform and generator.
+  macro(SET_CEF_TARGET_OUT_DIR)
+    if(${CMAKE_GENERATOR} STREQUAL "Ninja" OR
+!      ${CMAKE_GENERATOR} STREQUAL "Unix Makefiles" OR
+!      ${CMAKE_GENERATOR} STREQUAL "MSYS Makefiles")
+      # By default Ninja and Make builds don't create a subdirectory named after
+      # the configuration.
+      set(CEF_TARGET_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}")
+diff -c -r cef.orig/cmake/cef_variables.cmake cef/cmake/cef_variables.cmake
+*** cef.orig/cmake/cef_variables.cmake	2017-04-29 03:29:27.000000000 -0300
+--- cef/cmake/cef_variables.cmake	2017-05-02 17:54:39.494127400 -0300
+***************
+*** 313,319 ****
+  # Windows configuration.
+  #
+  
+! if(OS_WINDOWS)
+    # Configure use of the sandbox.
+    option(USE_SANDBOX "Enable or disable use of the sandbox." ON)
+    if(USE_SANDBOX AND NOT MSVC_VERSION EQUAL 1900)
+--- 313,460 ----
+  # Windows configuration.
+  #
+  
+! if(MINGW)
+!   set(CEF_LIBTYPE UNKNOWN)
+!   list(APPEND CEF_COMPILER_FLAGS
+!     -fno-strict-aliasing
+!     -fstack-protector
+!     -funwind-tables
+!     -fvisibility=hidden
+!     --param=ssp-buffer-size=4
+!     -pipe
+!     -pthread
+!     -Wall
+!     -Wno-missing-field-initializers
+!     -Wno-unused-parameter
+!     )
+!   list(APPEND CEF_C_COMPILER_FLAGS
+!     -std=c99
+!     )
+!   list(APPEND CEF_CXX_COMPILER_FLAGS
+!     -fno-exceptions
+!     -fno-rtti
+!     -fno-threadsafe-statics
+!     -fvisibility-inlines-hidden
+!     -std=gnu++11
+!     -Wsign-compare
+!     )
+!   list(APPEND CEF_COMPILER_FLAGS_DEBUG
+!     -O0
+!     -g
+!     )
+!   list(APPEND CEF_COMPILER_FLAGS_RELEASE
+!     -O2
+!     -fdata-sections
+!     -ffunction-sections
+!     -fno-ident
+!     -DNDEBUG
+!     -U_FORTIFY_SOURCE
+!     -D_FORTIFY_SOURCE=2
+!     )
+!   list(APPEND CEF_LINKER_FLAGS
+!     -fPIC
+!     -pthread
+!     -Wl,-rpath,.
+!     )
+!   list(APPEND CEF_LINKER_FLAGS_RELEASE
+!     -Wl,-O1
+!     -Wl,--as-needed
+!     -Wl,--gc-sections
+!     )
+! 
+!   include(CheckCCompilerFlag)
+!   include(CheckCXXCompilerFlag)
+! 
+!   CHECK_C_COMPILER_FLAG(-Wno-unused-local-typedefs COMPILER_SUPPORTS_NO_UNUSED_LOCAL_TYPEDEFS)
+!   if(COMPILER_SUPPORTS_NO_UNUSED_LOCAL_TYPEDEFS)
+!     list(APPEND CEF_C_COMPILER_FLAGS
+!       -Wno-unused-local-typedefs
+!       )
+!   endif()
+! 
+!   CHECK_CXX_COMPILER_FLAG(-Wno-literal-suffix COMPILER_SUPPORTS_NO_LITERAL_SUFFIX)
+!   if(COMPILER_SUPPORTS_NO_LITERAL_SUFFIX)
+!     list(APPEND CEF_CXX_COMPILER_FLAGS
+!       -Wno-literal-suffix
+!       )
+!   endif()
+! 
+!   CHECK_CXX_COMPILER_FLAG(-Wno-narrowing COMPILER_SUPPORTS_NO_NARROWING)
+!   if(COMPILER_SUPPORTS_NO_NARROWING)
+!     list(APPEND CEF_CXX_COMPILER_FLAGS
+!       -Wno-narrowing
+!       )
+!   endif()
+! 
+!   if(PROJECT_ARCH STREQUAL "x86_64")
+!     # 64-bit architecture.
+!     list(APPEND CEF_COMPILER_FLAGS
+!       -m64
+!       -march=x86-64
+!       )
+!     list(APPEND CEF_LINKER_FLAGS
+!       -m64
+!       )
+!   elseif(PROJECT_ARCH STREQUAL "x86")
+!     # 32-bit architecture.
+!     list(APPEND CEF_COMPILER_FLAGS
+!       -msse2
+!       -mfpmath=sse
+!       -mmmx
+!       -m32
+!       )
+!     list(APPEND CEF_LINKER_FLAGS
+!       -m32
+!       )
+!   endif()
+! 
+!   list(APPEND CEF_COMPILER_DEFINES
+!     WIN32 _WIN32 _WINDOWS             # Windows platform
+!     UNICODE _UNICODE                  # Unicode build
+!     NOMINMAX                          # Use the standard's templated min/max
+!     WIN32_LEAN_AND_MEAN               # Exclude less common API declarations
+!     _FILE_OFFSET_BITS=64              # Allow the Large File Support (LFS) interface to replace the old interface.
+!     )
+! 
+!   # Standard libraries.
+!   set(CEF_STANDARD_LIBS
+!     ssp
+!     )
+! 
+!   # CEF directory paths.
+!   set(CEF_RESOURCE_DIR        "${_CEF_ROOT}/Resources")
+!   set(CEF_BINARY_DIR          "${_CEF_ROOT}/$<CONFIGURATION>")
+!   set(CEF_BINARY_DIR_DEBUG    "${_CEF_ROOT}/Debug")
+!   set(CEF_BINARY_DIR_RELEASE  "${_CEF_ROOT}/Release")
+! 
+!   # CEF library paths.
+!   set(CEF_LIB_DEBUG   "${CEF_BINARY_DIR_DEBUG}/libcef.lib")
+!   set(CEF_LIB_RELEASE "${CEF_BINARY_DIR_RELEASE}/libcef.lib")
+! 
+!   # List of CEF binary files.
+!   set(CEF_BINARY_FILES
+!     chrome_elf.dll
+!     d3dcompiler_43.dll
+!     d3dcompiler_47.dll
+!     libcef.dll
+!     libEGL.dll
+!     libGLESv2.dll
+!     natives_blob.bin
+!     snapshot_blob.bin
+!     )
+! 
+!   # List of CEF resource files.
+!   set(CEF_RESOURCE_FILES
+!     cef.pak
+!     cef_100_percent.pak
+!     cef_200_percent.pak
+!     cef_extensions.pak
+!     devtools_resources.pak
+!     icudtl.dat
+!     locales
+!     )
+! 
+! elseif(OS_WINDOWS)
+    # Configure use of the sandbox.
+    option(USE_SANDBOX "Enable or disable use of the sandbox." ON)
+    if(USE_SANDBOX AND NOT MSVC_VERSION EQUAL 1900)
+diff -c -r cef.orig/include/base/cef_atomicops.h cef/include/base/cef_atomicops.h
+*** cef.orig/include/base/cef_atomicops.h	2017-04-29 03:29:27.000000000 -0300
+--- cef/include/base/cef_atomicops.h	2017-05-02 17:37:34.049081400 -0300
+***************
+*** 177,183 ****
+  }  // namespace base
+  
+  // Include our platform specific implementation.
+! #if defined(OS_WIN) && defined(COMPILER_MSVC) && defined(ARCH_CPU_X86_FAMILY)
+  #include "include/base/internal/cef_atomicops_x86_msvc.h"
+  #elif defined(OS_MACOSX)
+  #include "include/base/internal/cef_atomicops_mac.h"
+--- 177,183 ----
+  }  // namespace base
+  
+  // Include our platform specific implementation.
+! #if defined(OS_WIN) && defined(ARCH_CPU_X86_FAMILY)
+  #include "include/base/internal/cef_atomicops_x86_msvc.h"
+  #elif defined(OS_MACOSX)
+  #include "include/base/internal/cef_atomicops_mac.h"
+diff -c -r cef.orig/include/base/cef_bind_helpers.h cef/include/base/cef_bind_helpers.h
+*** cef.orig/include/base/cef_bind_helpers.h	2017-04-29 03:29:27.000000000 -0300
+--- cef/include/base/cef_bind_helpers.h	2017-05-02 17:38:03.081177700 -0300
+***************
+*** 272,284 ****
+  // MSVC warns when you try to use Base if T has a private destructor, the
+  // common pattern for refcounted types. It does this even though no attempt to
+  // instantiate Base is made.  We disable the warning for this definition.
+! #if defined(OS_WIN)
+  #pragma warning(push)
+  #pragma warning(disable:4624)
+  #endif
+    struct Base : public T, public BaseMixin {
+    };
+! #if defined(OS_WIN)
+  #pragma warning(pop)
+  #endif
+  
+--- 272,284 ----
+  // MSVC warns when you try to use Base if T has a private destructor, the
+  // common pattern for refcounted types. It does this even though no attempt to
+  // instantiate Base is made.  We disable the warning for this definition.
+! #if defined(_MSC_VER)
+  #pragma warning(push)
+  #pragma warning(disable:4624)
+  #endif
+    struct Base : public T, public BaseMixin {
+    };
+! #if defined(_MSC_VER)
+  #pragma warning(pop)
+  #endif
+  
+diff -c -r cef.orig/include/base/internal/cef_atomicops_x86_msvc.h cef/include/base/internal/cef_atomicops_x86_msvc.h
+*** cef.orig/include/base/internal/cef_atomicops_x86_msvc.h	2017-04-29 03:29:35.000000000 -0300
+--- cef/include/base/internal/cef_atomicops_x86_msvc.h	2017-05-02 17:40:04.896677200 -0300
+***************
+*** 81,87 ****
+    return Barrier_AtomicIncrement(ptr, increment);
+  }
+  
+! #if !(defined(_MSC_VER) && _MSC_VER >= 1400)
+  #error "We require at least vs2005 for MemoryBarrier"
+  #endif
+  inline void MemoryBarrier() {
+--- 81,87 ----
+    return Barrier_AtomicIncrement(ptr, increment);
+  }
+  
+! #if !(defined(_MSC_VER) && _MSC_VER >= 1400) && !(__MINGW32__)
+  #error "We require at least vs2005 for MemoryBarrier"
+  #endif
+  inline void MemoryBarrier() {
+diff -c -r cef.orig/include/internal/cef_string_wrappers.h cef/include/internal/cef_string_wrappers.h
+*** cef.orig/include/internal/cef_string_wrappers.h	2017-04-29 03:29:27.000000000 -0300
+--- cef/include/internal/cef_string_wrappers.h	2017-05-02 17:39:21.072792700 -0300
+***************
+*** 31,36 ****
+--- 31,37 ----
+  #define CEF_INCLUDE_INTERNAL_CEF_STRING_WRAPPERS_H_
+  #pragma once
+  
++ #include <cstring>
+  #include <memory.h>
+  #include <string>
+  

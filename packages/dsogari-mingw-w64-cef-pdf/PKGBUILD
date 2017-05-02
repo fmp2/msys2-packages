@@ -5,8 +5,8 @@ pkgbase=dsogari-mingw-w64-${_realname}
 pkgname="dsogari-${MINGW_PACKAGE_PREFIX}-${_realname}"
 provides=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 conflicts=("${MINGW_PACKAGE_PREFIX}-${_realname}")
-pkgver=0.3.0
-pkgrel=3
+pkgver=0.3.1
+pkgrel=1
 pkgdesc="HTML to PDF utility based on CEF (mingw-w64)"
 arch=('any')
 url="https://github.com/dsogari/cef-pdf"
@@ -15,7 +15,7 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cmake"
              "dsogari-${MINGW_PACKAGE_PREFIX}-cef")
 depends=("${MINGW_PACKAGE_PREFIX}-boost")
 source=("${_realname}-${pkgver}.tar.gz::https://github.com/dsogari/cef-pdf/archive/v${pkgver}.tar.gz")
-sha256sums=('ff1b8ee61d574c09ce3774894e92fd5eadf33d87d3c2225ebdeb32cacebc756c')
+sha256sums=('8dfd2a167583887edfa58b704b3b40b036fada86d6408f4de32b1d0b0883d6c3')
 
 build() {
   rm -rf "${srcdir}/build-${MINGW_CHOST}"
